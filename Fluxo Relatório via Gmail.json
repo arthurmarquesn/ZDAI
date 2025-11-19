@@ -1,0 +1,70 @@
+{
+  "name": "Gmail",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "d4c8eb6e-4b1b-47d8-b2ec-a6f0a6eaf3b3",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -128,
+        -128
+      ],
+      "id": "e0bdadcf-1bac-4c75-a458-b16a0d3fbef6",
+      "name": "Webhook",
+      "webhookId": "d4c8eb6e-4b1b-47d8-b2ec-a6f0a6eaf3b3"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.body.Email }}",
+        "subject": "Relatório sobre os tipos de manutenção executados anteriormente",
+        "emailType": "text",
+        "message": "=Olá {{ $json.body.Nome }}, você realizou um pedido de relatório e aqui está!\n\nRelatório de Solicitações de Manutenção – Sistema Automatizado  Durante o período de análise, foi realizado um levantamento referente à quantidade de solicitações registradas no sistema, separadas por tipo de manutenção. O objetivo deste relatório é identificar os tipos de serviço mais demandados, permitindo uma melhor organização das equipes e priorização de recursos.  A partir dos dados coletados, observou-se a seguinte distribuição:  Manutenção Corretiva: {{ $json.body.Corretiva_Programada }} solicitações  Manutenção Preventiva: {{ $json.body.Preventiva }} solicitações  Manutenção Emergencial: {{ $json.body.Emergencial }} solicitações    Com base nesses números, nota-se que as manutenções emergenciais representam a maior parcela da demanda, o que indica a necessidade de um planejamento mais eficaz de ações preventivas, visando reduzir falhas recorrentes e o tempo de inatividade dos equipamentos.",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        80,
+        -128
+      ],
+      "id": "53d05d5f-0990-4b3c-883d-dd1f77502cb8",
+      "name": "Send a message",
+      "webhookId": "73ae3c33-21b2-4066-a508-0c758c0bd1ca",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Kglla9QmnKWhv4lJ",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "c6e835f9-7216-459f-9d3b-228a263a3ee9",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "65987c77b907dec1c6ffad29ea6b2e804ab16b9d70e1672d0033bae78925089a"
+  },
+  "id": "hnTpuiOwFJPhKc60",
+  "tags": []
+}

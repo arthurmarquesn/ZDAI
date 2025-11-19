@@ -1,0 +1,145 @@
+{
+  "name": "Solicitação",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "13jFkAYO96bxeehRdkAMM9T5-XEeE8anLt4q_ldkxCkM",
+          "mode": "list",
+          "cachedResultName": "Backlog",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/13jFkAYO96bxeehRdkAMM9T5-XEeE8anLt4q_ldkxCkM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Página1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/13jFkAYO96bxeehRdkAMM9T5-XEeE8anLt4q_ldkxCkM/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ID": "={{ $json.body.bem }}",
+            "OBSERVAÇÃO": "={{ $json.body.obs }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "OBSERVAÇÃO",
+              "displayName": "OBSERVAÇÃO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "CRITICIDADE",
+              "displayName": "CRITICIDADE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "TIPO DE MANUTENÇÃO",
+              "displayName": "TIPO DE MANUTENÇÃO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "FUNCIONÁRIO",
+              "displayName": "FUNCIONÁRIO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ÁREA",
+              "displayName": "ÁREA",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        208,
+        0
+      ],
+      "id": "235d5b20-bc50-4861-b8a9-aaecd1d708a0",
+      "name": "Solicitação vai pro Banco de Dados",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "mQhyfwRUMzrJ6Xw1",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "8db2e3a6-5e7d-46df-9d32-2aebd164b91a",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "450f9c7b-2953-42d9-9f02-aeea19f6ee71",
+      "name": "Solicitação",
+      "webhookId": "8db2e3a6-5e7d-46df-9d32-2aebd164b91a"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Solicitação": {
+      "main": [
+        [
+          {
+            "node": "Solicitação vai pro Banco de Dados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "9e4ade9e-e206-4f8e-af3a-f47b3ca3c3ba",
+  "meta": {
+    "instanceId": "65987c77b907dec1c6ffad29ea6b2e804ab16b9d70e1672d0033bae78925089a"
+  },
+  "id": "rrpueybqWYnKME9d",
+  "tags": []
+}

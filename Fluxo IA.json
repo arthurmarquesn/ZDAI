@@ -1,0 +1,2012 @@
+{
+  "name": "IA",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            },
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "13jFkAYO96bxeehRdkAMM9T5-XEeE8anLt4q_ldkxCkM",
+          "mode": "list",
+          "cachedResultName": "Backlog",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/13jFkAYO96bxeehRdkAMM9T5-XEeE8anLt4q_ldkxCkM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Página1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/13jFkAYO96bxeehRdkAMM9T5-XEeE8anLt4q_ldkxCkM/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        -32,
+        0
+      ],
+      "id": "5e877eaf-32c9-45b3-8a97-11fa4e3176b8",
+      "name": "Google Sheets Trigger",
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "ze9g9N6BOwmmObgK",
+          "name": "Google Sheets Trigger account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "llama-3.1-8b-instant",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        400,
+        208
+      ],
+      "id": "226dbd27-11f8-468d-a9fb-1d9bb28bd28a",
+      "name": "Groq Chat Model",
+      "notesInFlow": false,
+      "credentials": {
+        "groqApi": {
+          "id": "rpcrI8PPN0ZipzNF",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=✅ PROMPT REFORMULADO (com balanceamento de carga entre manutentores)\nVocê é um especialista em manutenção industrial e deve classificar ordens de serviço com base em regras claras e precisas.\nSua tarefa é analisar a descrição do problema e gerar apenas um JSON válido, sem textos, comentários ou formatações extras.\nO JSON deve conter os seguintes campos obrigatórios:\n\n\n\"criticidade\": A, B ou C\n\n\nA: Impacto alto na operação, risco de parada se não resolvido\n\n\nB: Impacto médio, degradação de desempenho, risco se não tratado\n\n\nC: Impacto leve, não afeta produção, pode ser resolvido conforme cronograma\n\n\n\n\n\"tipo\": Preventiva, Preditiva ou Programada\n\n\nPreventiva: Manutenção regular para evitar falhas futuras\n\n\nPreditiva: Baseada em medições, sensores ou dados que indicam necessidade\n\n\nProgramada: Planejada com antecedência, dentro da rotina de manutenção\n\n\n\n\n\"nivel_tecnico\": Sênior, Pleno, Especialista, Júnior ou Assistente\n\n\nCriticidade A → Pleno ou Especialista\n\n\nCriticidade B → Sênior ou Júnior\n\n\nCriticidade C → Sênior ou Assistente\n\n\n\n\n\"especializacao\": Mecânico de Embalagem, Mecânico Geral, Eletromecânico ou Serviços Gerais\n\n\nMotores, elétrica, sensores, painéis → Eletromecânico\n\n\nEquipamentos de embalagem, ajustes mecânicos finos → Mecânico de Embalagem\n\n\nEstruturas, mecânica geral → Mecânico Geral\n\n\nLimpeza, iluminação, suporte, pequenos reparos → Serviços Gerais\n\n\n\n\n\n⚙️ Regras de classificação:\n\n\nProblemas leves → Criticidade C, tipo Preventiva, nível Assistente ou Sênior\n\n\nProblemas moderados → Criticidade B, tipo Programada, nível Júnior ou Sênior\n\n\nProblemas críticos (sem parada total) → Criticidade A, tipo Preditiva, nível Pleno ou Especialista\n\n\nA criticidade deve considerar também a tag do equipamento, quando presente.\n\n\n\n🔄 Regras de balanceamento (NOVO):\nPara evitar sobrecarga recorrente de um único manutentor:\n\n\nQuando mais de um nível técnico for possível, escolha o menos exigido ou mais leve entre eles\n(ex.: Assistente antes de Sênior, Júnior antes de Sênior, Pleno antes de Especialista).\n\n\nQuando duas especializações forem tecnicamente adequadas, priorize a que não foi usada com mais frequência para funções semelhantes.\n\n\nQuando o problema for genérico ou ambíguo, escolha a especialização menos sobrecarregada, desde que tecnicamente compatível.\n\n\nMantenha a lógica técnica, mas com distribuição equilibrada entre perfis disponíveis.\n\n\n\n⚠️ Importante:\n\n\nUse apenas os valores exatos listados acima.\n\n\nRetorne somente JSON válido, sem texto extra.\n\n\n\n✅ Exemplo de saída correta:\n{\n  \"criticidade\": \"C\",\n  \"tipo\": \"Preventiva\",\n  \"nivel_tecnico\": \"Assistente\",\n  \"especializacao\": \"Serviços Gerais\"\n}\n\n\nEntrada:\nDescrição do problema: {{ $json.observation }}\n\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        416,
+        0
+      ],
+      "id": "998a25f1-bb4e-4ddd-a3e8-abd8f9fd0dd9",
+      "name": "AI Agent",
+      "executeOnce": true,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// Captura a resposta do agente\nlet resposta = $json.text || $json.output || $json.response || $json.message;\n\nif (!resposta) {\n  resposta = JSON.stringify($json);\n}\n\n// Tenta converter a resposta para JSON\nlet parsed;\ntry {\n  parsed = JSON.parse(resposta);\n} catch (error) {\n  const match = resposta.match(/\\{[\\s\\S]*\\}/);\n  if (match) parsed = JSON.parse(match[0]);\n  else parsed = { erro: \"Falha ao converter resposta\", raw: resposta };\n}\n\nreturn [{ json: parsed }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        656,
+        -176
+      ],
+      "id": "03fdb3da-32d5-4b35-852e-5125f450749e",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Pega todas as linhas recebidas do Google Sheets\nconst rows = $input.all();\n\n// Se não tiver linhas, não faz nada\nif (rows.length === 0) {\n  return [{ json: { observation: \"\", id: \"\" } }];\n}\n\n// Pega a última linha (última inserida no Google Sheets)\nconst last = rows[rows.length - 1].json;\n\n// Retorna apenas os dados necessários\nreturn [{\n  json: {\n    observation: last[\"OBSERVAÇÃO\"] || \"\",\n    id: last[\"ID\"] || \"\"\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        208,
+        0
+      ],
+      "id": "1e1e3e0e-a962-4168-98b6-53a585a085df",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "13jFkAYO96bxeehRdkAMM9T5-XEeE8anLt4q_ldkxCkM",
+          "mode": "list",
+          "cachedResultName": "Backlog",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/13jFkAYO96bxeehRdkAMM9T5-XEeE8anLt4q_ldkxCkM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Página1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/13jFkAYO96bxeehRdkAMM9T5-XEeE8anLt4q_ldkxCkM/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "CRITICIDADE": "={{ $json.criticidade }}",
+            "TIPO DE MANUTENÇÃO": "={{ $json.tipo }}",
+            "ID": "={{ $('Code1').item.json.id }}"
+          },
+          "matchingColumns": [
+            "ID"
+          ],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "OBSERVAÇÃO",
+              "displayName": "OBSERVAÇÃO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "CRITICIDADE",
+              "displayName": "CRITICIDADE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "TIPO DE MANUTENÇÃO",
+              "displayName": "TIPO DE MANUTENÇÃO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "FUNCIONÁRIO",
+              "displayName": "FUNCIONÁRIO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ÁREA",
+              "displayName": "ÁREA",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        736,
+        48
+      ],
+      "id": "6b2aec3b-2cf5-477c-92ed-398504cb2791",
+      "name": "Update row in sheet",
+      "executeOnce": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "mQhyfwRUMzrJ6Xw1",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Code').item.json.especializacao }}",
+                    "rightValue": "Eletromecânico",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "89ac4493-eb2f-4bf1-b333-4db984be529b"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Eletromecânico"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "8c676f8c-e207-4c7e-b08b-6dbd39703524",
+                    "leftValue": "={{ $('Code').item.json.especializacao }}",
+                    "rightValue": "Mecânico de Embalagem",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Mecânico de Embalagem"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "1f849917-af52-4ccf-b4f8-3b0392a7f3f0",
+                    "leftValue": "={{ $('Code').item.json.especializacao }}",
+                    "rightValue": "Mecânico Geral",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Mecânico Geral"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "722010eb-adbc-480f-a35d-804d0d1d21be",
+                    "leftValue": "={{ $('Code').item.json.especializacao }}",
+                    "rightValue": "Serviços Gerais",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "SG"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        944,
+        48
+      ],
+      "id": "94a4b26c-cadf-40b1-8db6-049e1caa4c80",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Code').item.json.nivel_tecnico }}",
+                    "rightValue": "Assistente",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "feaf08f3-70b6-410b-b464-f8c8997a1ba0"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "ASS"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "3043eede-5d4f-41a7-a0c2-9b2d68976987",
+                    "leftValue": "={{ $('Code').item.json.nivel_tecnico }}",
+                    "rightValue": "Júnior",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "JN"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "1547e371-0398-48ba-a91d-4f1b5259c5d8",
+                    "leftValue": "={{ $('Code').item.json.nivel_tecnico }}",
+                    "rightValue": "Sênior",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "SN"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "fe1623f4-4942-491f-82c9-93d3bc6965ab",
+                    "leftValue": "={{ $('Code').item.json.nivel_tecnico }}",
+                    "rightValue": "Pleno",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Pleno"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "272ccf36-b9ec-41b6-ab00-e478686b7e36",
+                    "leftValue": "={{ $('Code').item.json.nivel_tecnico }}",
+                    "rightValue": "Especialista",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Especialista"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        1200,
+        -480
+      ],
+      "id": "64c06fbb-2a04-4ca1-ad02-80004e097fea",
+      "name": "Switch1"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Code').item.json.nivel_tecnico }}",
+                    "rightValue": "Assistente",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "feaf08f3-70b6-410b-b464-f8c8997a1ba0"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "ASS"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "3043eede-5d4f-41a7-a0c2-9b2d68976987",
+                    "leftValue": "={{ $('Code').item.json.nivel_tecnico }}",
+                    "rightValue": "Júnior",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "JN"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "1547e371-0398-48ba-a91d-4f1b5259c5d8",
+                    "leftValue": "={{ $('Code').item.json.nivel_tecnico }}",
+                    "rightValue": "Sênior",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "SN"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "fe1623f4-4942-491f-82c9-93d3bc6965ab",
+                    "leftValue": "={{ $('Code').item.json.nivel_tecnico }}",
+                    "rightValue": "Pleno",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Pleno"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "272ccf36-b9ec-41b6-ab00-e478686b7e36",
+                    "leftValue": "={{ $('Code').item.json.nivel_tecnico }}",
+                    "rightValue": "Especialista",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Especialista"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        1200,
+        -208
+      ],
+      "id": "316b1436-1cc4-4b31-872b-ee30254e3a6d",
+      "name": "Switch2"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Code').item.json.nivel_tecnico }}",
+                    "rightValue": "Assistente",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "feaf08f3-70b6-410b-b464-f8c8997a1ba0"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "ASS"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "3043eede-5d4f-41a7-a0c2-9b2d68976987",
+                    "leftValue": "={{ $('Code').item.json.nivel_tecnico }}",
+                    "rightValue": "Júnior",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "JN"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "1547e371-0398-48ba-a91d-4f1b5259c5d8",
+                    "leftValue": "={{ $('Code').item.json.nivel_tecnico }}",
+                    "rightValue": "Sênior",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "SN"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "fe1623f4-4942-491f-82c9-93d3bc6965ab",
+                    "leftValue": "={{ $('Code').item.json.nivel_tecnico }}",
+                    "rightValue": "Pleno",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Pleno"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "272ccf36-b9ec-41b6-ab00-e478686b7e36",
+                    "leftValue": "={{ $('Code').item.json.nivel_tecnico }}",
+                    "rightValue": "Especialista",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Especialista"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        1216,
+        64
+      ],
+      "id": "926dc14b-5d3c-4ec0-9ea8-319ed114bbb6",
+      "name": "Switch3"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Code').item.json.nivel_tecnico }}",
+                    "rightValue": "Assistente",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "feaf08f3-70b6-410b-b464-f8c8997a1ba0"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "ASS"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "3043eede-5d4f-41a7-a0c2-9b2d68976987",
+                    "leftValue": "={{ $('Code').item.json.nivel_tecnico }}",
+                    "rightValue": "Júnior",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "JN"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "1547e371-0398-48ba-a91d-4f1b5259c5d8",
+                    "leftValue": "={{ $('Code').item.json.nivel_tecnico }}",
+                    "rightValue": "Sênior",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "SN"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "fe1623f4-4942-491f-82c9-93d3bc6965ab",
+                    "leftValue": "={{ $('Code').item.json.nivel_tecnico }}",
+                    "rightValue": "Pleno",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Pleno"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "272ccf36-b9ec-41b6-ab00-e478686b7e36",
+                    "leftValue": "={{ $('Code').item.json.nivel_tecnico }}",
+                    "rightValue": "Especialista",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Especialista"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        1216,
+        352
+      ],
+      "id": "20a51b9e-f2b0-4d28-b2b2-4e29693db138",
+      "name": "Switch4"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1yA3N0J-Q_zLn47CdmJqStrOz1k_tpJN1o0hSMSKrXdc",
+          "mode": "list",
+          "cachedResultName": "Backlog OS",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1yA3N0J-Q_zLn47CdmJqStrOz1k_tpJN1o0hSMSKrXdc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 2044874967,
+          "mode": "list",
+          "cachedResultName": "MANUTENTORES",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1yA3N0J-Q_zLn47CdmJqStrOz1k_tpJN1o0hSMSKrXdc/edit#gid=2044874967"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "FUNÇÃO",
+              "lookupValue": "ASS. ELETROMECANICO"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1328,
+        -832
+      ],
+      "id": "549c2639-4485-4345-aeb2-b4e79a549d0f",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "mQhyfwRUMzrJ6Xw1",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1yA3N0J-Q_zLn47CdmJqStrOz1k_tpJN1o0hSMSKrXdc",
+          "mode": "list",
+          "cachedResultName": "Backlog OS",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1yA3N0J-Q_zLn47CdmJqStrOz1k_tpJN1o0hSMSKrXdc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 2044874967,
+          "mode": "list",
+          "cachedResultName": "MANUTENTORES",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1yA3N0J-Q_zLn47CdmJqStrOz1k_tpJN1o0hSMSKrXdc/edit#gid=2044874967"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "FUNÇÃO",
+              "lookupValue": "ELETRO JR."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1344,
+        -624
+      ],
+      "id": "f598997f-5705-4fce-9de5-c295bfcacf84",
+      "name": "Get row(s) in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "mQhyfwRUMzrJ6Xw1",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1yA3N0J-Q_zLn47CdmJqStrOz1k_tpJN1o0hSMSKrXdc",
+          "mode": "list",
+          "cachedResultName": "Backlog OS",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1yA3N0J-Q_zLn47CdmJqStrOz1k_tpJN1o0hSMSKrXdc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 2044874967,
+          "mode": "list",
+          "cachedResultName": "MANUTENTORES",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1yA3N0J-Q_zLn47CdmJqStrOz1k_tpJN1o0hSMSKrXdc/edit#gid=2044874967"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "FUNÇÃO",
+              "lookupValue": "ELETRO SR."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1488,
+        -496
+      ],
+      "id": "4c6057f1-d0aa-45ba-931d-f939b4de7117",
+      "name": "Get row(s) in sheet2",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "mQhyfwRUMzrJ6Xw1",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1yA3N0J-Q_zLn47CdmJqStrOz1k_tpJN1o0hSMSKrXdc",
+          "mode": "list",
+          "cachedResultName": "Backlog OS",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1yA3N0J-Q_zLn47CdmJqStrOz1k_tpJN1o0hSMSKrXdc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 2044874967,
+          "mode": "list",
+          "cachedResultName": "MANUTENTORES",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1yA3N0J-Q_zLn47CdmJqStrOz1k_tpJN1o0hSMSKrXdc/edit#gid=2044874967"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "FUNÇÃO",
+              "lookupValue": "TÉCNICO AUTOMAÇÃO"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1488,
+        -352
+      ],
+      "id": "e23e86ee-0db5-4173-8fcf-24c46867c5ba",
+      "name": "Get row(s) in sheet3",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "mQhyfwRUMzrJ6Xw1",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "13jFkAYO96bxeehRdkAMM9T5-XEeE8anLt4q_ldkxCkM",
+          "mode": "list",
+          "cachedResultName": "Backlog",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/13jFkAYO96bxeehRdkAMM9T5-XEeE8anLt4q_ldkxCkM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Página1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/13jFkAYO96bxeehRdkAMM9T5-XEeE8anLt4q_ldkxCkM/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "CRITICIDADE": "={{ $('Code').item.json.criticidade }}",
+            "TIPO DE MANUTENÇÃO": "={{ $('Code').item.json.tipo }}",
+            "ID": "={{ $('Code1').item.json.id }}",
+            "FUNCIONÁRIO": "={{ $json.FUNCIONARIO }}",
+            "ÁREA": "={{ $json.AREA }}"
+          },
+          "matchingColumns": [
+            "ID"
+          ],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "OBSERVAÇÃO",
+              "displayName": "OBSERVAÇÃO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "CRITICIDADE",
+              "displayName": "CRITICIDADE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "TIPO DE MANUTENÇÃO",
+              "displayName": "TIPO DE MANUTENÇÃO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "FUNCIONÁRIO",
+              "displayName": "FUNCIONÁRIO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ÁREA",
+              "displayName": "ÁREA",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2144,
+        -80
+      ],
+      "id": "6b44b82e-5e53-4812-8355-8fd15edd1a89",
+      "name": "Update row in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "mQhyfwRUMzrJ6Xw1",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1yA3N0J-Q_zLn47CdmJqStrOz1k_tpJN1o0hSMSKrXdc",
+          "mode": "list",
+          "cachedResultName": "Backlog OS",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1yA3N0J-Q_zLn47CdmJqStrOz1k_tpJN1o0hSMSKrXdc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 2044874967,
+          "mode": "list",
+          "cachedResultName": "MANUTENTORES",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1yA3N0J-Q_zLn47CdmJqStrOz1k_tpJN1o0hSMSKrXdc/edit#gid=2044874967"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "FUNÇÃO",
+              "lookupValue": "ASS. MECANICO"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1536,
+        -176
+      ],
+      "id": "b6e89359-c87c-4176-9117-33dcb811b4ca",
+      "name": "Get row(s) in sheet4",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "mQhyfwRUMzrJ6Xw1",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1yA3N0J-Q_zLn47CdmJqStrOz1k_tpJN1o0hSMSKrXdc",
+          "mode": "list",
+          "cachedResultName": "Backlog OS",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1yA3N0J-Q_zLn47CdmJqStrOz1k_tpJN1o0hSMSKrXdc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 2044874967,
+          "mode": "list",
+          "cachedResultName": "MANUTENTORES",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1yA3N0J-Q_zLn47CdmJqStrOz1k_tpJN1o0hSMSKrXdc/edit#gid=2044874967"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "FUNÇÃO",
+              "lookupValue": "ELETRO JR."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1696,
+        -48
+      ],
+      "id": "0ae33061-ca62-4576-b8a7-f4cb3d665cd6",
+      "name": "Get row(s) in sheet5",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "mQhyfwRUMzrJ6Xw1",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1yA3N0J-Q_zLn47CdmJqStrOz1k_tpJN1o0hSMSKrXdc",
+          "mode": "list",
+          "cachedResultName": "Backlog OS",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1yA3N0J-Q_zLn47CdmJqStrOz1k_tpJN1o0hSMSKrXdc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 2044874967,
+          "mode": "list",
+          "cachedResultName": "MANUTENTORES",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1yA3N0J-Q_zLn47CdmJqStrOz1k_tpJN1o0hSMSKrXdc/edit#gid=2044874967"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "FUNÇÃO",
+              "lookupValue": "MECANICO SR"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1520,
+        -16
+      ],
+      "id": "001e112a-139c-4468-b47d-cf9fd0742d8a",
+      "name": "Get row(s) in sheet6",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "mQhyfwRUMzrJ6Xw1",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1yA3N0J-Q_zLn47CdmJqStrOz1k_tpJN1o0hSMSKrXdc",
+          "mode": "list",
+          "cachedResultName": "Backlog OS",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1yA3N0J-Q_zLn47CdmJqStrOz1k_tpJN1o0hSMSKrXdc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 2044874967,
+          "mode": "list",
+          "cachedResultName": "MANUTENTORES",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1yA3N0J-Q_zLn47CdmJqStrOz1k_tpJN1o0hSMSKrXdc/edit#gid=2044874967"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "FUNÇÃO",
+              "lookupValue": "MECANICO PLN"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1616,
+        160
+      ],
+      "id": "8aa4ec6b-ff05-4123-a64f-757bf1f680e8",
+      "name": "Get row(s) in sheet7",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "mQhyfwRUMzrJ6Xw1",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1yA3N0J-Q_zLn47CdmJqStrOz1k_tpJN1o0hSMSKrXdc",
+          "mode": "list",
+          "cachedResultName": "Backlog OS",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1yA3N0J-Q_zLn47CdmJqStrOz1k_tpJN1o0hSMSKrXdc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 2044874967,
+          "mode": "list",
+          "cachedResultName": "MANUTENTORES",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1yA3N0J-Q_zLn47CdmJqStrOz1k_tpJN1o0hSMSKrXdc/edit#gid=2044874967"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "FUNÇÃO",
+              "lookupValue": "Serviços Gerais"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1760,
+        368
+      ],
+      "id": "b9d199bc-b699-4303-8bf6-63f2dd50b7b6",
+      "name": "Get row(s) in sheet8",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "mQhyfwRUMzrJ6Xw1",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "13jFkAYO96bxeehRdkAMM9T5-XEeE8anLt4q_ldkxCkM",
+          "mode": "list",
+          "cachedResultName": "Backlog",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/13jFkAYO96bxeehRdkAMM9T5-XEeE8anLt4q_ldkxCkM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 18349462,
+          "mode": "list",
+          "cachedResultName": "Página2",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/13jFkAYO96bxeehRdkAMM9T5-XEeE8anLt4q_ldkxCkM/edit#gid=18349462"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "TÉCNICO": "={{ $json.funcionario }}",
+            "Segunda": "={{ $json.pmanut }}"
+          },
+          "matchingColumns": [
+            "TÉCNICO"
+          ],
+          "schema": [
+            {
+              "id": "TÉCNICO",
+              "displayName": "TÉCNICO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Domingo",
+              "displayName": "Domingo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Segunda",
+              "displayName": "Segunda",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Terça",
+              "displayName": "Terça",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Quarta",
+              "displayName": "Quarta",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Quinta",
+              "displayName": "Quinta",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Sexta",
+              "displayName": "Sexta",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Sábado",
+              "displayName": "Sábado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "FUNCIONÁRIO",
+              "displayName": "FUNCIONÁRIO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ÁREA",
+              "displayName": "ÁREA",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "CRITICIDADE",
+              "displayName": "CRITICIDADE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "TIPO DE MANUTENÇÃO",
+              "displayName": "TIPO DE MANUTENÇÃO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2560,
+        -80
+      ],
+      "id": "4c920a8f-5b0b-49a2-a1ba-8d7c6e3ead91",
+      "name": "Update row in sheet2",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "mQhyfwRUMzrJ6Xw1",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\n  \"pmanut\": \"*{{ $json['TIPO DE MANUTENÇÃO'] }}*  :   {{ $('Code1').item.json.observation }} \" ,\n  \"funcionario\" : \"{{ $json[\"FUNCIONÁRIO\"] }}\"\n\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2352,
+        -80
+      ],
+      "id": "9ff4264f-0c02-4783-83cd-b5690c12ca92",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Code1').item.json.observation }}",
+        "contextWindowLength": 1000
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        528,
+        304
+      ],
+      "id": "0a384a4e-66d8-41fe-be99-45e4a9bf5d1d",
+      "name": "Simple Memory"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Sheets Trigger": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Switch1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Switch2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Switch3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Switch4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch1": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get row(s) in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get row(s) in sheet2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get row(s) in sheet3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get row(s) in sheet3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet3": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet1": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet2": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch2": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet4",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get row(s) in sheet5",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get row(s) in sheet6",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get row(s) in sheet7",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get row(s) in sheet7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet4": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet5": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet6": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet7": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch3": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet4",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get row(s) in sheet5",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get row(s) in sheet6",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get row(s) in sheet7",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get row(s) in sheet7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch4": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet8",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get row(s) in sheet8",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get row(s) in sheet8",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get row(s) in sheet8",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get row(s) in sheet8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet8": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row in sheet1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "8ba41a0a-9776-4acd-b2b6-5fbd58652ae9",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "65987c77b907dec1c6ffad29ea6b2e804ab16b9d70e1672d0033bae78925089a"
+  },
+  "id": "boT5lc6HDY3HcVgy",
+  "tags": []
+}
